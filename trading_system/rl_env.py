@@ -12,7 +12,11 @@ Actions: Discrete {0: SELL (-1), 1: HOLD (0), 2: BUY (+1)}.
 Reward: Δ Portfolio Value - fee * |ΔPosition| - risk_lambda * position^2.
 """
 """Gym-compatible trading environment stub for discrete-action RL."""
-class TradingEnv:
+import numpy as np
+import gym
+from gym import spaces
+
+class TradingEnv(gym.Env):
     def __init__(self, df, window_size=50, fee=0.0001, risk_lambda=0.0):
         # Basic initialization
         self.window_size = window_size
@@ -24,6 +28,13 @@ class TradingEnv:
         self.cash = 0.0
         self.prev_price = 0.0
         self.done = False
+        # Define action and observation spaces
+        obs_dim = self.window_size * 3 + 3
+        self.observation_space = spaces.Box(
+            low=-np.inf, high=np.inf,
+            shape=(obs_dim,), dtype=np.float32
+        )
+        self.action_space = spaces.Discrete(3)
 
     def reset(self):
         # Reset to initial state
