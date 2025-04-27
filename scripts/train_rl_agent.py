@@ -4,6 +4,7 @@ Train a DQN agent on historical tick data for trading.
 """
 import os
 import sys
+import logging
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import argparse
 
@@ -23,10 +24,15 @@ def main():
                         help="Output path for the trained RL model (zip format).")
     parser.add_argument('--total-timesteps', type=int, default=100000,
                         help="Total timesteps for training the RL agent.")
+    parser.add_argument('-v', '--verbose', action='store_true', default=False,
+                        help="Enable verbose logging")
     args = parser.parse_args()
 
     # Load config
     config = Config()
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO,
+                        format='%(asctime)s %(levelname)s: %(message)s')
+    logging.debug(f"Data path: {args.data_path}, Model output path: {args.model_output_path or config.rl_model_path}, Total timesteps: {args.total_timesteps}")
     # Override RL params if needed
     model_path = args.model_output_path or config.rl_model_path
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
@@ -59,12 +65,12 @@ def main():
     )
 
     # Train the agent
-    print(f"Training DQN agent for {args.total_timesteps} timesteps...")
+    logging.info(f"Training DQN agent for {args.total_timesteps} timesteps...")
     model.learn(total_timesteps=args.total_timesteps)
 
     # Save the trained model
     model.save(model_path)
-    print(f"RL model saved to {model_path}")
+    logging.info(f"RL model saved to {model_path}")
 
 
 if __name__ == '__main__':
