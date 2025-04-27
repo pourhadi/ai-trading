@@ -1,0 +1,9 @@
+numpy
+pandas
+pyzmq
+pytest
+torch
+xgboost
+ib_insync
+stable-baselines3
+gym
